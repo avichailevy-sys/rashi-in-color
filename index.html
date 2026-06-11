@@ -14,7 +14,8 @@
 <script type="text/babel">
 const { useState, useEffect, useMemo } = React;
 
-// Ekev = Deuteronomy 7:12 – 11:25
+const TC_RECORDS = [{"ref": "Deut 7:12", "dibbur": "והיה עקב תשמעון / ושמר ה'", "group": "Tanchuma", "work": "Midrash Tanchuma", "locus": "Ekev 1", "conf": "high", "fn": "1"}, {"ref": "Deut 7:19", "dibbur": "והזרע הנטויה — זו החרב", "group": "Sifrei", "work": "Sifrei Bamidbar", "locus": "Shelach 115", "conf": "med", "fn": "8"}, {"ref": "Deut 7:20", "dibbur": "הצרעה", "group": "Talmud Bavli", "work": "Bavli Sotah", "locus": "36a", "conf": "med", "fn": "9"}, {"ref": "Deut 8:1", "dibbur": "כל המצוה", "group": "Tanchuma", "work": "Midrash Tanchuma", "locus": "Ekev 6", "conf": "high", "fn": "11"}, {"ref": "Deut 9:18", "dibbur": "ואתנפל — 40-day chronology", "group": "Seder Olam", "work": "Seder Olam Rabbah", "locus": "ch. 6", "conf": "med", "fn": "20,22"}, {"ref": "Deut 9:20", "dibbur": "ובאהרן התאנף / להשמידו", "group": "Midrash Rabbah", "work": "Vayikra Rabbah", "locus": "7:1", "conf": "high", "fn": "23"}, {"ref": "Deut 10:1", "dibbur": "ואעש ארון (Bezalel's ark)", "group": "Tanchuma", "work": "Midrash Tanchuma", "locus": "10", "conf": "high", "fn": "26"}, {"ref": "Deut 10:1", "dibbur": "ואעש ארון (Bezalel's ark)", "group": "Yerushalmi", "work": "Yerushalmi Shekalim", "locus": "6:1", "conf": "high", "fn": "27"}, {"ref": "Deut 10:1", "dibbur": "ואעש ארון (Bezalel's ark)", "group": "Seder Olam", "work": "Seder Olam Rabbah", "locus": "ch. 6", "conf": "med", "fn": "28"}, {"ref": "Deut 10:1", "dibbur": "ואעש ארון (Bezalel's ark)", "group": "Talmud Bavli", "work": "Bavli Berakhot", "locus": "55a", "conf": "med", "fn": "29"}, {"ref": "Deut 10:6-7", "dibbur": "ובני ישראל נסעו... מוסרה", "group": "Mekhilta", "work": "Mekhilta de-R. Yishmael", "locus": "Beshalach, Vayisa 1", "conf": "high", "fn": "31"}, {"ref": "Deut 10:6-7", "dibbur": "ובני ישראל נסעו... מוסרה", "group": "Tanchuma", "work": "Midrash Tanchuma", "locus": "Chukat 18", "conf": "high", "fn": "31"}, {"ref": "Deut 10:10", "dibbur": "ואנכי עמדתי בהר... כימים הראשונים", "group": "Seder Olam", "work": "Seder Olam Rabbah", "locus": "ch. 6", "conf": "high", "fn": "37"}, {"ref": "Deut 10:18", "dibbur": "עשה משפט יתום ואלמנה", "group": "Talmud Bavli", "work": "Bavli Megillah", "locus": "31a", "conf": "high", "fn": "39"}, {"ref": "Deut 10:18", "dibbur": "ואהב גר — של יעקב", "group": "Other (tannaitic)", "work": "R. Eliezer b. R. Yose", "locus": "—", "conf": "low", "fn": "40"}, {"ref": "Deut 10:19", "dibbur": "כי גרים הייתם / מום שבך", "group": "Talmud Bavli", "work": "Bavli Bava Metzia", "locus": "59b", "conf": "high", "fn": "41"}, {"ref": "Deut 11:6", "dibbur": "בקרב כל ישראל (Dathan & Abiram)", "group": "Tanchuma", "work": "Midrash Tanchuma", "locus": "Korach", "conf": "high", "fn": "42"}, {"ref": "Deut 11:6", "dibbur": "בקרב כל ישראל (Dathan & Abiram)", "group": "Talmud Bavli", "work": "Bavli Sanhedrin", "locus": "110a", "conf": "high", "fn": "43"}, {"ref": "Deut 11:10", "dibbur": "לא כארץ מצרים הוא", "group": "Sifrei", "work": "Sifrei Devarim", "locus": "37", "conf": "high", "fn": "44"}, {"ref": "Deut 11:10", "dibbur": "ובמסכת כתובות דרשו", "group": "Talmud Bavli", "work": "Bavli Ketubot", "locus": "112a", "conf": "high", "fn": "47"}, {"ref": "Deut 11:10", "dibbur": "אשר יצאתם משם — רעמסס", "group": "Sifrei", "work": "Sifrei Devarim", "locus": "38", "conf": "med", "fn": "52"}, {"ref": "Deut 11:12", "dibbur": "אשר ה' אלהיך דרש אתה / תמיד עיני", "group": "Talmud Bavli", "work": "Bavli Rosh Hashanah", "locus": "17b", "conf": "high", "fn": "55,56"}, {"ref": "Deut 11:13", "dibbur": "ולעבדו — עבודה שבלב (תפלה)", "group": "Sifrei/Talmud", "work": "Sifrei Devarim 41 / Taanit 2a", "locus": "—", "conf": "low", "fn": "?"}, {"ref": "Deut 11:18", "dibbur": "ושמתם את דברי", "group": "Sifrei", "work": "Sifrei Devarim", "locus": "46", "conf": "high", "fn": "79"}, {"ref": "Deut 11:19", "dibbur": "ולמדתם... לדבר בם", "group": "Sifrei", "work": "Sifrei Devarim", "locus": "47", "conf": "high", "fn": "80"}, {"ref": "Deut 11:22", "dibbur": "שמר תשמרון", "group": "Sifrei", "work": "Sifrei Devarim", "locus": "48", "conf": "high", "fn": "81"}, {"ref": "Deut 11:22", "dibbur": "ללכת בכל דרכיו", "group": "Sifrei", "work": "Sifrei Devarim", "locus": "49", "conf": "high", "fn": "82"}, {"ref": "Deut 11:22", "dibbur": "ולדבקה בו", "group": "Sifrei", "work": "Sifrei Devarim", "locus": "49", "conf": "med", "fn": "83"}, {"ref": "Deut 11:23", "dibbur": "ועצמים מכם", "group": "Sifrei", "work": "Sifrei Devarim", "locus": "50", "conf": "high", "fn": "86"}, {"ref": "Deut 11:25", "dibbur": "לא יתיצב איש", "group": "Sifrei", "work": "Sifrei Devarim", "locus": "52", "conf": "high", "fn": "87"}, {"ref": "Deut 11:25", "dibbur": "ומוראכם", "group": "Sifrei", "work": "Sifrei Devarim", "locus": "52 (ibid)", "conf": "med", "fn": "88"}];
+
 const EKEV = [
   { chapter: 7, from: 12, to: 26 },
   { chapter: 8, from: 1, to: 20 },
@@ -23,217 +24,263 @@ const EKEV = [
   { chapter: 11, from: 1, to: 25 },
 ];
 
-const SOURCE_RULES = [
-  { label: "Midrash Tanchuma", color: "#16a34a", bg: "#dcfce7",
-    keys: ["tanchuma","tanhuma","tanḥuma","תנחומא"] },
-  { label: "Sifrei", color: "#2563eb", bg: "#dbeafe",
-    keys: ["sifrei","sifre","siphre","sifré","ספרי"] },
-  { label: "Sifra / Torat Kohanim", color: "#0d9488", bg: "#ccfbf1",
-    keys: ["sifra","torath kohanim","torat kohanim","ספרא","תורת כהנים"] },
-  { label: "Mekhilta", color: "#7c3aed", bg: "#ede9fe",
-    keys: ["mekhilta","mechilta","מכילתא"] },
-  { label: "Yerushalmi", color: "#db2777", bg: "#fce7f3",
-    keys: ["yerushalmi","jerusalem talmud","ירושלמי"] },
-  { label: "Talmud Bavli", color: "#d97706", bg: "#fef3c7",
-    keys: ["talmud","gemara","בבלי","גמרא","berakhot","berakhoth","berachot","sotah",
-      "soṭah","sanhedrin","shabbat","sabbath","yoma","taanit","taanith","menahot",
-      "menachoth","chullin","hullin","ḥullin","bekhorot","bekhoroth","arakhin",
-      "bava batra","baba bathra","ketubot","kethuboth","kiddushin","nedarim",
-      "pesachim","pesahim","rosh hashana","sukkah","succah","megillah",
-      "avodah zarah","makkot","makkoth","horayot"] },
-  { label: "Targum / Onkelos", color: "#4f46e5", bg: "#e0e7ff",
-    keys: ["targum","onkelos","onḳelos","אונקלוס","תרגום"] },
-  { label: "Midrash Rabbah", color: "#ea580c", bg: "#ffedd5",
-    keys: ["rabbah","rabba"] },
+// canonical source group -> colors
+const COLORS = {
+  "Tanchuma":      {c:"#16a34a", bg:"#dcfce7"},
+  "Sifrei":        {c:"#2563eb", bg:"#dbeafe"},
+  "Talmud Bavli":  {c:"#d97706", bg:"#fef3c7"},
+  "Midrash Rabbah":{c:"#ea580c", bg:"#ffedd5"},
+  "Mekhilta":      {c:"#7c3aed", bg:"#ede9fe"},
+  "Yerushalmi":    {c:"#db2777", bg:"#fce7f3"},
+  "Seder Olam":    {c:"#0891b2", bg:"#cffafe"},
+  "Sifra":         {c:"#0d9488", bg:"#ccfbf1"},
+  "Targum":        {c:"#4f46e5", bg:"#e0e7ff"},
+  "Other":         {c:"#6b7280", bg:"#f1f5f9"},
+};
+const colorFor = (g) => COLORS[g] || COLORS["Other"];
+
+// canonicalize any label (TC group or Sefaria label) to a COLORS key
+function canon(label){
+  const t = (label||"").toLowerCase();
+  if (t.includes("tanchuma") || t.includes("tanhuma")) return "Tanchuma";
+  if (t.includes("sifrei") || t.includes("sifre")) return "Sifrei";
+  if (t.includes("seder olam")) return "Seder Olam";
+  if (t.includes("yerushalmi")) return "Yerushalmi";
+  if (t.includes("mekhilta")) return "Mekhilta";
+  if (t.includes("sifra") || t.includes("torat kohanim")) return "Sifra";
+  if (t.includes("targum") || t.includes("onkelos")) return "Targum";
+  if (t.includes("rabbah") || t.includes("rabba")) return "Midrash Rabbah";
+  if (t.includes("bavli") || t.includes("talmud")) return "Talmud Bavli";
+  return "Other";
+}
+
+// Sefaria keyword rules -> canonical group
+const SEF_RULES = [
+  ["Tanchuma", ["tanchuma","tanhuma","תנחומא"]],
+  ["Sifrei", ["sifrei","sifre","siphre","ספרי"]],
+  ["Seder Olam", ["seder olam","סדר עולם"]],
+  ["Sifra", ["sifra","torath kohanim","torat kohanim","ספרא"]],
+  ["Mekhilta", ["mekhilta","mechilta","מכילתא"]],
+  ["Yerushalmi", ["yerushalmi","jerusalem talmud","ירושלמי"]],
+  ["Talmud Bavli", ["talmud","gemara","בבלי","גמרא","berakhot","berakhoth","sotah",
+     "sanhedrin","megillah","ketubot","kethuboth","bava metzia","bava bathra",
+     "rosh hashana","taanit","chullin","menahot"]],
+  ["Targum", ["targum","onkelos","תרגום"]],
+  ["Midrash Rabbah", ["rabbah","rabba"]],
 ];
-const RESIDUE = { label: "Original Rashi (no source flagged)", color: "#475569", bg: "#ffffff" };
+function detectSef(en, he){
+  const t = ((en||"")+" "+(he||"")).toLowerCase();
+  const out = [];
+  for (const [g, keys] of SEF_RULES){ if (keys.some(k=>t.includes(k))) out.push(g); }
+  return [...new Set(out)];
+}
 
 const stripTags = (html) => {
   try { return new DOMParser().parseFromString(html||"","text/html").body.textContent||""; }
   catch { return (html||"").replace(/<[^>]+>/g,""); }
 };
-const extractFootnotes = (html) => {
-  try {
-    const d = new DOMParser().parseFromString(html||"","text/html");
-    return [...d.querySelectorAll("i.footnote, .footnote")].map(n=>n.textContent.trim()).filter(Boolean);
-  } catch { return []; }
-};
-const detectSources = (en, he) => {
-  const fields = [{name:"translation", text: en||""}, {name:"hebrew", text: he||""}];
-  const matches = [];
-  for (const rule of SOURCE_RULES) {
-    let found = null;
-    for (const f of fields) {
-      const lc = f.text.toLowerCase();
-      for (const k of rule.keys) {
-        const idx = lc.indexOf(k.toLowerCase());
-        if (idx !== -1) {
-          const start = Math.max(0, idx - 30);
-          found = { keyword: k, where: f.name, snippet: f.text.slice(start, idx + k.length + 30).trim() };
-          break;
-        }
-      }
-      if (found) break;
-    }
-    if (found) matches.push({ ...rule, evidence: found });
-  }
-  return matches;
-};
-async function fetchChapter(chapter) {
-  const ref = encodeURIComponent(`Rashi on Deuteronomy ${chapter}`);
-  const url = `https://www.sefaria.org/api/v3/texts/${ref}?version=hebrew&version=english`;
+const norm = (s)=> (s||"").replace(/[\u0591-\u05C7]/g,"")
+  .replace(/[\"'\u05f3\u05f4.,:;()\u2013\u2014\/]/g," ").replace(/\s+/g," ").trim();
+const firstWords = (s,n)=> norm(s).split(" ").slice(0,n).join(" ");
+
+// parse "Deut 7:12" / "Deut 10:6-7"
+function parseRef(ref){
+  const m = ref.match(/(\d+):(\d+)(?:-(\d+))?/);
+  if(!m) return {ch:0, verses:[]};
+  const ch=+m[1], a=+m[2], b=m[3]?+m[3]:+m[2];
+  const verses=[]; for(let v=a; v<=b; v++) verses.push(v);
+  return {ch, verses};
+}
+// main dibbur (before / or dash or paren)
+const tcKey = (d)=> firstWords((d||"").split(/\s[\/\u2013\u2014]\s|\(/)[0], 2);
+
+async function fetchChapter(chapter){
+  const ref = encodeURIComponent("Rashi on Deuteronomy "+chapter);
+  const url = "https://www.sefaria.org/api/v3/texts/"+ref+"?version=hebrew&version=english";
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Sefaria ${res.status} for chapter ${chapter}`);
+  if(!res.ok) throw new Error("Sefaria "+res.status+" ch "+chapter);
   const data = await res.json();
-  const versions = data.versions || [];
-  const he = versions.find(v => (v.language||"").startsWith("he"))?.text || [];
-  const en = versions.find(v => (v.language||"").startsWith("en"))?.text || [];
-  return { he, en };
+  const vs = data.versions||[];
+  const he = (vs.find(v=>(v.language||"").startsWith("he"))||{}).text||[];
+  const en = (vs.find(v=>(v.language||"").startsWith("en"))||{}).text||[];
+  return {he, en};
 }
 
-function App() {
-  const [comments, setComments] = useState([]);
-  const [status, setStatus] = useState("loading");
-  const [error, setError] = useState("");
-  const [onlyResidue, setOnlyResidue] = useState(false);
-  const [activeFilters, setActiveFilters] = useState(new Set());
-  const [showDebug, setShowDebug] = useState(false);
+const STATUS = {
+  agree:{label:"Confirmed — both", c:"#16a34a", icon:"\u25CF"},
+  differ:{label:"Both — different source", c:"#d97706", icon:"\u25D0"},
+  tc:{label:"Torat Chaim adds", c:"#2563eb", icon:"\u25C6"},
+  sef:{label:"Sefaria only", c:"#64748b", icon:"\u25CB"},
+  none:{label:"Unattributed", c:"#94a3b8", icon:"\u25CC"},
+};
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const all = [];
-        for (const seg of EKEV) {
-          const { he, en } = await fetchChapter(seg.chapter);
-          for (let v = 0; v < he.length; v++) {
-            const verseNum = v + 1;
-            if (verseNum < seg.from || verseNum > seg.to) continue;
-            const heC = Array.isArray(he[v]) ? he[v] : [];
-            const enC = Array.isArray(en[v]) ? en[v] : [];
-            for (let c = 0; c < heC.length; c++) {
-              const heHtml = heC[c]||"", enHtml = enC[c]||"";
-              const heText = stripTags(heHtml);
-              if (!heText.trim()) continue;
-              const enText = stripTags(enHtml);
-              all.push({ ref:`${seg.chapter}:${verseNum}`, heText, enText,
-                sources: detectSources(enText, heText) });
+function App(){
+  const [comments,setComments] = useState([]);
+  const [unaligned,setUnaligned] = useState([]);
+  const [status,setStatus] = useState("loading");
+  const [error,setError] = useState("");
+  const [filter,setFilter] = useState(new Set());
+  const [details,setDetails] = useState(false);
+
+  useEffect(()=>{
+    let cancel=false;
+    (async()=>{
+      try{
+        // index TC by chapter:verse
+        const tcByVerse = {};
+        TC_RECORDS.forEach((r,i)=>{
+          const {ch,verses} = parseRef(r.ref);
+          verses.forEach(v=>{ const k=ch+":"+v; (tcByVerse[k]=tcByVerse[k]||[]).push({...r,_i:i,_key:tcKey(r.dibbur)}); });
+        });
+        const used = new Set();
+        const all=[];
+        for(const seg of EKEV){
+          const {he,en} = await fetchChapter(seg.chapter);
+          for(let v=0; v<he.length; v++){
+            const vn=v+1;
+            if(vn<seg.from||vn>seg.to) continue;
+            const hc = Array.isArray(he[v])?he[v]:[];
+            const ec = Array.isArray(en[v])?en[v]:[];
+            for(let c=0;c<hc.length;c++){
+              const heText = stripTags(hc[c]||"");
+              if(!heText.trim()) continue;
+              const enText = stripTags(ec[c]||"");
+              const nHe = norm(heText);
+              const cands = tcByVerse[seg.chapter+":"+vn]||[];
+              const tc = cands.filter(r=> r._key && nHe.indexOf(r._key)!==-1 && nHe.indexOf(r._key)<45);
+              tc.forEach(r=>used.add(r._i));
+              all.push({ ref:seg.chapter+":"+vn, heText, enText,
+                sef:detectSef(enText,heText), tc });
             }
           }
         }
-        if (!cancelled) { setComments(all); setStatus(all.length?"ready":"empty"); }
-      } catch (e) { if (!cancelled){ setError(String(e.message||e)); setStatus("error"); } }
+        const leftover = TC_RECORDS.map((r,i)=>({...r,_i:i})).filter(r=>!used.has(r._i));
+        if(!cancel){ setComments(all); setUnaligned(leftover); setStatus(all.length?"ready":"empty"); }
+      }catch(e){ if(!cancel){ setError(String(e.message||e)); setStatus("error"); } }
     })();
-    return () => { cancelled = true; };
-  }, []);
+    return ()=>{cancel=true;};
+  },[]);
 
-  const stats = useMemo(() => {
-    const counts = {}; let residue = 0;
-    for (const c of comments) {
-      if (!c.sources.length) { residue++; continue; }
-      counts[c.sources[0].label] = (counts[c.sources[0].label]||0)+1;
-    }
-    return { counts, residue, total: comments.length };
-  }, [comments]);
+  function statusOf(cm){
+    const sef = new Set(cm.sef.map(canon));
+    const tcg = new Set(cm.tc.map(r=>canon(r.group)));
+    if(tcg.size && sef.size) return [...tcg].some(g=>sef.has(g))?"agree":"differ";
+    if(tcg.size) return "tc";
+    if(sef.size) return "sef";
+    return "none";
+  }
 
-  const toggleFilter = (label) => setActiveFilters(prev => {
-    const next = new Set(prev); next.has(label)?next.delete(label):next.add(label); return next;
-  });
-
-  const visible = comments.filter(c => {
-    if (onlyResidue) return c.sources.length === 0;
-    if (activeFilters.size === 0) return true;
-    if (c.sources.length === 0) return activeFilters.has(RESIDUE.label);
-    return c.sources.some(s => activeFilters.has(s.label));
-  });
-  const usedRules = SOURCE_RULES.filter(r => stats.counts[r.label]);
+  const enriched = useMemo(()=> comments.map(cm=>({...cm, st:statusOf(cm)})), [comments]);
+  const counts = useMemo(()=>{ const o={agree:0,differ:0,tc:0,sef:0,none:0}; enriched.forEach(c=>o[c.st]++); return o; }, [enriched]);
+  const toggle = (k)=> setFilter(p=>{const n=new Set(p); n.has(k)?n.delete(k):n.add(k); return n;});
+  const visible = enriched.filter(c=> filter.size===0 || filter.has(c.st));
 
   return (
-    <div style={{fontFamily:"Georgia, serif", maxWidth:920, margin:"0 auto", padding:20, color:"#1e293b"}}>
+    <div style={{fontFamily:"Georgia, serif", maxWidth:940, margin:"0 auto", padding:20, color:"#1e293b"}}>
       <h1 style={{fontSize:24, marginBottom:4}}>רש"י בצבעים — פרשת עקב</h1>
       <p style={{fontSize:13, color:"#64748b", marginTop:0}}>
-        Standard Rashi (Deut. 7:12–11:25), colored by source names found in the Sefaria text/translation.
-        <strong> "No source flagged" = unattributed in this apparatus, not proven original.</strong> ACT / passim come later.
+        Standard Rashi (Deut. 7:12–11:25), reconciling two source layers:
+        <b> Sefaria</b> (source names spotted in the text/translation) and
+        <b> Torat Chaim</b> (source footnotes, hand-extracted). Each comment shows whether they confirm or extend each other.
       </p>
+
       {status==="loading" && <p>Fetching Ekev from Sefaria…</p>}
-      {status==="empty" && <p>Loaded, but no comments parsed — tell me and I'll adjust the parser.</p>}
       {status==="error" && (
-        <div style={{background:"#fef2f2", border:"1px solid #fecaca", padding:12, borderRadius:8}}>
-          <strong>Couldn't reach Sefaria:</strong> {error}
-          <div style={{fontSize:12, marginTop:6, color:"#991b1b"}}>
-            Likely a file:// fetch block — run a local server (see note) or tell me and I'll bake the data in.
-          </div>
+        <div style={{background:"#fef2f2",border:"1px solid #fecaca",padding:12,borderRadius:8}}>
+          <b>Couldn't reach Sefaria:</b> {error}
+          <div style={{fontSize:12,color:"#991b1b",marginTop:6}}>Serve over http(s), not file://.</div>
         </div>
       )}
+
       {status==="ready" && (<>
-        <div style={{display:"flex", flexWrap:"wrap", gap:8, margin:"14px 0", alignItems:"center"}}>
-          {usedRules.map(r => (
-            <button key={r.label} onClick={()=>toggleFilter(r.label)} style={{
-              display:"flex", alignItems:"center", gap:6, padding:"4px 10px", borderRadius:999,
-              cursor:"pointer", fontSize:13, border:`1.5px solid ${r.color}`,
-              background: activeFilters.has(r.label)?r.color:r.bg,
-              color: activeFilters.has(r.label)?"#fff":"#1e293b"}}>
-              <span style={{width:12,height:12,borderRadius:3,background:r.color,display:"inline-block"}} />
-              {r.label} <span style={{opacity:.7}}>· {stats.counts[r.label]}</span>
+        {/* status filter / stats */}
+        <div style={{display:"flex",flexWrap:"wrap",gap:8,margin:"14px 0"}}>
+          {Object.keys(STATUS).map(k=>(
+            <button key={k} onClick={()=>toggle(k)} style={{
+              display:"flex",alignItems:"center",gap:6,padding:"5px 11px",borderRadius:999,
+              cursor:"pointer",fontSize:13,border:"1.5px solid "+STATUS[k].c,
+              background: filter.has(k)?STATUS[k].c:"#fff", color: filter.has(k)?"#fff":"#1e293b"}}>
+              <span style={{color: filter.has(k)?"#fff":STATUS[k].c}}>{STATUS[k].icon}</span>
+              {STATUS[k].label} <b>· {counts[k]}</b>
             </button>
           ))}
-          <button onClick={()=>toggleFilter(RESIDUE.label)} style={{
-            display:"flex", alignItems:"center", gap:6, padding:"4px 10px", borderRadius:999,
-            cursor:"pointer", fontSize:13, border:`1.5px dashed ${RESIDUE.color}`,
-            background: activeFilters.has(RESIDUE.label)?RESIDUE.color:"#fff",
-            color: activeFilters.has(RESIDUE.label)?"#fff":"#1e293b"}}>
-            {RESIDUE.label} <span style={{opacity:.7}}>· {stats.residue}</span>
-          </button>
         </div>
-        <div style={{display:"flex", gap:16, alignItems:"center", fontSize:13, marginBottom:14, flexWrap:"wrap"}}>
-          <label style={{cursor:"pointer"}}>
-            <input type="checkbox" checked={onlyResidue} onChange={e=>setOnlyResidue(e.target.checked)} /> Isolate "original Rashi"
-          </label>
-          <label style={{cursor:"pointer"}}>
-            <input type="checkbox" checked={showDebug} onChange={e=>setShowDebug(e.target.checked)} /> Show match basis (audit)
-          </label>
-          <span style={{color:"#64748b"}}>
-            {stats.total} comments · {stats.residue} unattributed
-            ({stats.total?Math.round(stats.residue/stats.total*100):0}% residue)
-          </span>
+
+        <div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:8,padding:"10px 14px",
+          fontSize:13,marginBottom:6}}>
+          Torat Chaim <b>confirms</b> Sefaria on <b>{counts.agree}</b> comment(s) and
+          <b> adds {counts.tc}</b> attribution(s) Sefaria missed.
         </div>
-        <div dir="rtl" style={{display:"flex", flexDirection:"column", gap:10}}>
-          {visible.map((c,i) => {
-            const primary = c.sources[0] || RESIDUE;
-            const isResidue = c.sources.length === 0;
+
+        <label style={{fontSize:13,cursor:"pointer",display:"inline-block",marginBottom:12}}>
+          <input type="checkbox" checked={details} onChange={e=>setDetails(e.target.checked)} /> Show details (loci · footnotes · confidence)
+        </label>
+
+        {unaligned.length>0 && (
+          <div style={{fontSize:12,color:"#92400e",background:"#fffbeb",border:"1px solid #fde68a",
+            borderRadius:8,padding:"8px 12px",marginBottom:12}}>
+            {unaligned.length} Torat Chaim record(s) couldn't be auto-aligned to a Sefaria comment (dibbur didn't match) — listed at the bottom for manual placement.
+          </div>
+        )}
+
+        <div dir="rtl" style={{display:"flex",flexDirection:"column",gap:10}}>
+          {visible.map((cm,i)=>{
+            const st = STATUS[cm.st];
+            const primaryG = cm.tc.length?canon(cm.tc[0].group):(cm.sef.length?canon(cm.sef[0]):null);
+            const col = primaryG?colorFor(primaryG):{c:"#94a3b8",bg:"#ffffff"};
+            const isNone = cm.st==="none";
             return (
-              <div key={i} style={{background:primary.bg, borderRight:`5px solid ${primary.color}`,
-                borderRadius:6, padding:"10px 14px",
-                border: isResidue?`1.5px dashed ${RESIDUE.color}`:"1px solid #e2e8f0", borderRightWidth:5}}>
-                <div dir="ltr" style={{fontSize:11, color:"#64748b", marginBottom:4, fontFamily:"monospace"}}>
-                  Deut. {c.ref}
-                  {c.sources.map(s => (
-                    <span key={s.label} style={{marginInlineStart:6, padding:"1px 6px", borderRadius:4,
-                      background:s.color, color:"#fff", fontSize:10}}>{s.label}</span>
-                  ))}
-                  {isResidue && <span style={{marginInlineStart:6, color:RESIDUE.color}}>· רש"י עצמאי?</span>}
+              <div key={i} style={{background:col.bg, borderRight:"5px solid "+col.c, borderRadius:6,
+                padding:"10px 14px", border: isNone?"1.5px dashed #94a3b8":"1px solid #e2e8f0", borderRightWidth:5}}>
+                <div dir="ltr" style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:5}}>
+                  <span style={{fontSize:11,color:"#64748b",fontFamily:"monospace"}}>Deut. {cm.ref}</span>
+                  <span style={{fontSize:11,fontWeight:"bold",color:st.c}}>{st.icon} {st.label}</span>
                 </div>
-                <div style={{fontSize:18, lineHeight:1.7}}>{c.heText}</div>
-                {showDebug && (
-                  <div dir="ltr" style={{fontSize:11, color:"#475569", marginTop:6,
-                    borderTop:"1px dotted #cbd5e1", paddingTop:4}}>
-                    {c.sources.length ? c.sources.map(s => (
-                      <div key={s.label} style={{marginBottom:2}}>
-                        <strong style={{color:s.color}}>{s.label}</strong>
-                        {" "}— matched "<em>{s.evidence.keyword}</em>" in {s.evidence.where}: …{s.evidence.snippet}…
-                      </div>
-                    )) : <span>no source keyword found in text</span>}
+                <div dir="ltr" style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:6}}>
+                  {cm.tc.map((r,j)=>{ const cc=colorFor(canon(r.group)); return (
+                    <span key={"t"+j} style={{fontSize:11,padding:"2px 7px",borderRadius:4,
+                      background:cc.c,color:"#fff"}}>
+                      {details? (r.work+" "+r.locus).trim() : canon(r.group)}
+                      <span style={{opacity:.8,fontStyle:"italic"}}> · TC{details&&r.conf?(" · "+r.conf):""}</span>
+                    </span>
+                  );})}
+                  {cm.sef.filter(g=> !cm.tc.some(r=>canon(r.group)===canon(g))).map((g,j)=>{ const cc=colorFor(canon(g)); return (
+                    <span key={"s"+j} style={{fontSize:11,padding:"2px 7px",borderRadius:4,
+                      background:"#fff",color:cc.c,border:"1px solid "+cc.c}}>
+                      {canon(g)} <span style={{opacity:.7,fontStyle:"italic"}}>· Sefaria</span>
+                    </span>
+                  );})}
+                  {isNone && <span style={{fontSize:11,color:"#94a3b8"}}>רש"י עצמאי?</span>}
+                </div>
+                <div style={{fontSize:18,lineHeight:1.7}}>{cm.heText}</div>
+                {details && cm.tc.length>0 && (
+                  <div dir="rtl" style={{fontSize:11,color:"#475569",marginTop:6,borderTop:"1px dotted #cbd5e1",paddingTop:4}}>
+                    {cm.tc.map((r,j)=>(<div key={j}>{r.work} {r.locus} — הערה {r.fn} ({r.conf})</div>))}
                   </div>
                 )}
               </div>
             );
           })}
         </div>
+
+        {unaligned.length>0 && (
+          <div style={{marginTop:22}}>
+            <h3 style={{fontSize:15}}>Torat Chaim records not auto-aligned</h3>
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              {unaligned.map((r,i)=>{ const cc=colorFor(canon(r.group)); return (
+                <div key={i} dir="ltr" style={{fontSize:12,padding:"6px 10px",borderRadius:6,
+                  background:cc.bg,borderRight:"4px solid "+cc.c}}>
+                  <b>{r.ref}</b> · {r.work} {r.locus} · <span dir="rtl">{r.dibbur}</span> <i>({r.conf})</i>
+                </div>
+              );})}
+            </div>
+          </div>
+        )}
       </>)}
     </div>
   );
 }
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
 </html>
