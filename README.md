@@ -1,6 +1,6 @@
 # רש"י בצבעים / Rashi in Color
 
-A proof-of-concept viewer that color-codes Rashi's commentary on **Parashat Ekev** (Deuteronomy 7:12–11:25) by the source each comment draws on — and highlights what is left unattributed as the "original Rashi" layer.
+A proof-of-concept viewer that color-codes Rashi's commentary on **Parashat Ekev** (Deuteronomy 7:12–11:25) by the source each comment draws on, and reconciles two independent source layers against each other — confirming where they agree and surfacing what each one adds.
 
 **Live demo:** https://avichailevy-sys.github.io/rashi-in-color/
 
@@ -8,40 +8,54 @@ A proof-of-concept viewer that color-codes Rashi's commentary on **Parashat Ekev
 
 ## What it does
 
-- Displays the **standard text of Rashi** on Ekev, in Hebrew (RTL), comment by comment.
-- **Colors each comment by its source** — Midrash Tanchuma (green), Sifrei, Sifra / Torat Kohanim, Mekhilta, Yerushalmi, Talmud Bavli, Targum / Onkelos, Midrash Rabbah.
-- Marks comments with **no detected source** as *"original Rashi"* (dashed, neutral) — the residue the project is ultimately interested in.
-- **Filter** by source, **isolate the residue** with one toggle, and open the **match-basis panel** to audit exactly which word triggered each color and where it appeared.
+Displays the **standard text of Rashi** on Ekev, comment by comment, and tags each comment from two source layers:
 
-## Data source
+- **Sefaria** — source names spotted in Rashi's text and its English translation.
+- **Torat Chaim** — source footnotes from the Mossad HaRav Kook edition, hand-extracted (31 attributions across the parashah).
 
-Text and translation are fetched live from the [Sefaria API (v3)](https://developers.sefaria.org/reference/get-v3-texts) — the standard Hebrew Rashi plus its English translation — at page load. Nothing is stored; the page is a single static file.
+Each comment gets a reconciliation status:
 
-## Important limitation
+- **● Confirmed — both** — Sefaria and Torat Chaim name the same source.
+- **◐ Both — different source** — both attribute, but to different works.
+- **◆ Torat Chaim adds** — a source Sefaria missed (the enhancement).
+- **○ Sefaria only** — a source Torat Chaim's footnotes didn't carry.
+- **◌ Unattributed** — neither names a source (the residue).
 
-This is a demonstration of the **interface**, not a finished source apparatus.
+Source chips are tagged by origin, the status pills double as filters, and a **Show details** toggle reveals the precise locus (e.g. *Sifrei Devarim 37*), footnote number, and a confidence flag for each Torat Chaim attribution.
 
-Sefaria does not hold Rashi's sources as structured data for this text — there are no source footnotes in the API response. Attribution here therefore works by **keyword-matching** source names against Rashi's text and its English translation. That catches a source only when it happens to be named in passing, so coverage is **incidental and incomplete**, and the residue is correspondingly inflated. Read the colors as a working prototype of how a real attribution layer would look, not as an authoritative claim about Rashi's sources.
+## Data sources
+
+Rashi's text and the Sefaria layer are fetched live from the [Sefaria API (v3)](https://developers.sefaria.org/reference/get-v3-texts) at page load. The Torat Chaim layer is embedded in the page (also published as `torat-chaim-ekev-sources.csv` / `.json`), extracted from the printed edition's source footnotes — keeping only genuine source attributions and dropping explanatory glosses (Maharik, Mizrachi, cross-references).
+
+## Why two layers
+
+Sefaria has no structured source data for Rashi here, so its layer only catches a source when a name happens to appear in the prose — incidental and incomplete. Torat Chaim records the source as a real editorial note on the comment, so it recovers attributions Sefaria misses (on Ekev, most of them: the Sifrei spine of chapter 11, the Mekhilta/Tanchuma on 10:6, the Bezalel-ark cluster on 10:1). The viewer makes that comparison visible: agreement is confirmation, divergence is enhancement.
+
+## Known limitations
+
+- The Torat Chaim attributions were read from photographs of the printed edition; medium- and low-confidence loci are flagged and should be spot-checked against the book before citation.
+- Sefaria–Torat Chaim alignment matches by verse plus the opening words of the dibbur. It is deliberately conservative — records whose dibbur doesn't line up are listed separately as "not auto-aligned" rather than forced onto the wrong comment.
+- This covers one parashah and one witness (standard Rashi). It demonstrates the method, not a complete apparatus.
 
 ## Roadmap
 
-- **Al HaTorah version** — repoint the same viewer at the Al HaTorah witness, whose per-comment *מקור* links are systematic rather than incidental, and compare the two side by side. (Next step.)
-- **TR-tool layer** — bring in ACT, passim, and Dicta to detect *paraphrastic* reuse, where Rashi reworks a source rather than naming it — the hard "מעבד" cases that keyword-matching and verbatim alignment both miss.
-- **Reconciliation view** — agreement / disagreement across scholarship and the automated tools, in the GenizaNexus pattern.
+- An **Al HaTorah** version, pointed at the Al HaTorah witness with its systematic *מקור* links.
+- A **TR-tool layer** (ACT, passim, Dicta) to detect *paraphrastic* reuse, where Rashi reworks a source without naming it.
+- Reconciliation across scholarship and automated tools together, in the GenizaNexus pattern.
 
 ## Running locally
 
-Because the page fetches from Sefaria at runtime, it must be **served**, not opened directly from disk (a `file://` page will be blocked from making the request). From the project folder:
+The page fetches from Sefaria at runtime, so it must be **served**, not opened from disk:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-then open `http://localhost:8000/`. Served over https (GitHub Pages, Netlify), it works with no extra steps.
+then open `http://localhost:8000/`. Over https (GitHub Pages, Netlify) it works with no extra steps.
 
 ## Built with
 
-A single `index.html` — React + Babel loaded from CDN, no build step.
+A single `index.html` — React + Babel from CDN, no build step.
 
 ## Context
 
