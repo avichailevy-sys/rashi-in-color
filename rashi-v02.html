@@ -22,6 +22,50 @@ const GEL_RECORDS = [
   {ref:"Deut 7:19", dibbur:"היד החזקה", group:"Sifrei", work:"ספרי (סוף שלח)", locus:"", conf:"med", note:"הגדה של פסח + ספרי"},
   {ref:"Deut 7:19", dibbur:"הזרע הנטויה", group:"Sifrei", work:"ספרי (שלח)", locus:"", conf:"high", note:"הגדה של פסח + ספרי"},
   {ref:"Deut 7:20", dibbur:"הצרעה", group:"Talmud Bavli", work:"בבלי סוטה", locus:"לו", conf:"high", note:"ר\"ש בן לקיש"},
+  {ref:"Deut 8:1", dibbur:"כל המצוה", group:"Tanchuma", work:"מדרש תנחומא", locus:"עקב ו", conf:"high", note:"מצטט תנחומא"},
+  {ref:"Deut 8:4", dibbur:"שמלתך לא", group:"Other", work:"פסיקתא דר\"כ", locus:"בשלח", conf:"high", note:"פסיקתא דרב כהנא"},
+  {ref:"Deut 9:1", dibbur:"גדולים ועצומים", group:"Sifrei", work:"ספרי דברים", locus:"", conf:"high", note:"מצטט ספרי"},
+  {ref:"Deut 9:9", dibbur:"ואשב בהר", group:"Talmud Bavli", work:"בבלי מגילה", locus:"כא", conf:"high", note:"ר' יוחנן"},
+  {ref:"Deut 9:10", dibbur:"לוחת", group:"Tanchuma", work:"מדרש תנחומא", locus:"י", conf:"high", note:"ר' חנינא"},
+  {ref:"Deut 9:18", dibbur:"ואתנפל", group:"Tanchuma", work:"מדרש תנחומא", locus:"כי תשא לא", conf:"high", note:"ר' יהודה בר שלום"},
+  {ref:"Deut 9:20", dibbur:"ואתפלל", group:"Other", work:"פסיקתא רבתי", locus:"אחרי מות", conf:"high", note:"ר' יהושע דסיכנין"},
+  {ref:"Deut 10:1", dibbur:"ואעש ארון", group:"Tanchuma", work:"מדרש תנחומא", locus:"י", conf:"high", note:"גם ברכות נה"},
+  {ref:"Deut 10:6", dibbur:"ובני ישראל", group:"Yerushalmi", work:"ירושלמי יומא", locus:"א:א", conf:"high", note:"גם מכילתא בשלח / תנחומא"},
+  {ref:"Deut 10:8", dibbur:"לעמוד לפני", group:"Talmud Bavli", work:"בבלי ערכין", locus:"יא", conf:"high", note:"ר' יהודה א\"ר שמואל"},
+  {ref:"Deut 10:12", dibbur:"כי אם", group:"Talmud Bavli", work:"בבלי ברכות", locus:"לג", conf:"high", note:"הכל בידי שמים"},
+  {ref:"Deut 10:18", dibbur:"עושה משפט", group:"Talmud Bavli", work:"בבלי מגילה", locus:"לא", conf:"high", note:"ר' יוחנן"},
+  {ref:"Deut 10:18", dibbur:"ואוהב גר", group:"Midrash Rabbah", work:"בראשית רבה", locus:"ע", conf:"high", note:"עקילס הגר"},
+  {ref:"Deut 10:19", dibbur:"כי גרים", group:"Talmud Bavli", work:"בבלי ב\"מ", locus:"נט", conf:"high", note:"ר' נתן"},
+  {ref:"Deut 11:6", dibbur:"בקרב כל", group:"Tanchuma", work:"תנחומא (ילמדנו) קרח", locus:"", conf:"high", note:"ר' יהודה / ר' נחמיה"},
+  {ref:"Deut 11:6", dibbur:"ואת כל", group:"Talmud Bavli", work:"בבלי סנהדרין", locus:"קי", conf:"high", note:"ר' אלעזר · ממון"},
+  {ref:"Deut 11:10", dibbur:"לא כארץ", group:"Sifrei", work:"ספרי דברים", locus:"", conf:"high", note:"גם כתובות קיב / סוטה לד"},
+  {ref:"Deut 11:11", dibbur:"ארץ הרים", group:"Sifrei", work:"ספרי דברים", locus:"", conf:"high", note:"שבח א\"י"},
+  {ref:"Deut 11:12", dibbur:"אשר ה", group:"Sifrei", work:"ספרי דברים", locus:"", conf:"high", note:"דורש אותה"},
+  {ref:"Deut 11:12", dibbur:"תמיד עיני", group:"Talmud Bavli", work:"בבלי ר\"ה", locus:"יז", conf:"high", note:"עתים לטובה/לרעה"},
+  {ref:"Deut 11:13", dibbur:"והיה אם", group:"Talmud Bavli", work:"בבלי סוכה", locus:"מו", conf:"high", note:"גם ספרי / ירושלמי"},
+  {ref:"Deut 11:13", dibbur:"מצוה אתכם", group:"Sifrei", work:"ספרי דברים", locus:"נח", conf:"high", note:"חביבים עליך"},
+  {ref:"Deut 11:13", dibbur:"לאהבה את", group:"Sifrei", work:"ספרי דברים", locus:"מא", conf:"high", note:"שלא תאמר הריני למד ע\"מ להתעשר"},
+  {ref:"Deut 11:13", dibbur:"ולעבדו", group:"Sifrei", work:"ספרי דברים", locus:"מא", conf:"high", note:"תפילה"},
+  {ref:"Deut 11:14", dibbur:"ונתתי מטר", group:"Sifrei", work:"ספרי דברים", locus:"מא", conf:"high", note:""},
+  {ref:"Deut 11:14", dibbur:"בעתו", group:"Sifrei", work:"ספרי דברים", locus:"מב", conf:"high", note:"ר' נתן · גם תענית כג"},
+  {ref:"Deut 11:14", dibbur:"יורה", group:"Sifrei", work:"ספרי דברים", locus:"מב", conf:"high", note:""},
+  {ref:"Deut 11:14", dibbur:"ומלקוש", group:"Talmud Bavli", work:"בבלי תענית", locus:"ו", conf:"high", note:"דבי ר' ישמעאל"},
+  {ref:"Deut 11:14", dibbur:"ואספת דגנך", group:"Sifrei", work:"ספרי דברים", locus:"מב", conf:"high", note:""},
+  {ref:"Deut 11:15", dibbur:"ונתתי עשב", group:"Sifrei", work:"ספרי דברים", locus:"מג", conf:"high", note:""},
+  {ref:"Deut 11:16", dibbur:"השמרו לכם", group:"Sifrei", work:"ספרי דברים", locus:"מג", conf:"high", note:""},
+  {ref:"Deut 11:16", dibbur:"וסרתם", group:"Sifrei", work:"ספרי דברים", locus:"מג", conf:"high", note:""},
+  {ref:"Deut 11:16", dibbur:"אלהים אחרים", group:"Sifrei", work:"ספרי דברים", locus:"מג", conf:"high", note:""},
+  {ref:"Deut 11:17", dibbur:"את יבולה", group:"Sifrei", work:"ספרי דברים", locus:"מג", conf:"high", note:""},
+  {ref:"Deut 11:17", dibbur:"ואבדתם", group:"Sifrei", work:"ספרי דברים", locus:"מג", conf:"high", note:"משל למלך"},
+  {ref:"Deut 11:18", dibbur:"ושמתם את", group:"Sifrei", work:"ספרי דברים", locus:"מג", conf:"high", note:"מצוות בגלות"},
+  {ref:"Deut 11:19", dibbur:"ולמדתם אתם", group:"Sifrei", work:"ספרי דברים", locus:"מד", conf:"high", note:"ר' יוסי בן עקיבא"},
+  {ref:"Deut 11:21", dibbur:"למען ירבו", group:"Mekhilta", work:"מכילתא", locus:"יתרו", conf:"high", note:"נוטריקון"},
+  {ref:"Deut 11:22", dibbur:"שמור תשמרון", group:"Sifrei", work:"ספרי דברים", locus:"מח", conf:"high", note:"להזהר בתלמודו"},
+  {ref:"Deut 11:22", dibbur:"ללכת בכל", group:"Sifrei", work:"ספרי דברים", locus:"מט", conf:"high", note:"דרכי הקב\"ה"},
+  {ref:"Deut 11:22", dibbur:"ולדבקה בו", group:"Sifrei", work:"ספרי דברים", locus:"מט", conf:"high", note:"הדבק בחכמים"},
+  {ref:"Deut 11:23", dibbur:"והוריש ה", group:"Sifrei", work:"ספרי דברים", locus:"נ", conf:"high", note:""},
+  {ref:"Deut 11:23", dibbur:"ועצומים מכם", group:"Sifrei", work:"ספרי דברים", locus:"נ", conf:"high", note:""},
+  {ref:"Deut 11:25", dibbur:"לא יתיצב", group:"Sifrei", work:"ספרי דברים", locus:"", conf:"high", note:"אין לי אלא איש"},
 ];
 
 const GEL_NOTES = [
@@ -238,7 +282,7 @@ function App(){
     <div style={{fontFamily:"Georgia, serif", maxWidth:940, margin:"0 auto", padding:20, color:"#1e293b"}}>
       <h1 style={{fontSize:24, marginBottom:4}}>רש"י בצבעים — פרשת עקב <span style={{fontSize:14,color:"#7c3aed"}}>· גרסה 0.2</span></h1>
       <p dir="rtl" style={{fontSize:13, color:"#64748b", marginTop:0, lineHeight:1.6}}>
-        פירוש רש"י (דברים ז׳:י״ב–י״א:כ״ה) עם שכבות ייחוס: <b>ספריא</b>, <b>תורת חיים</b>, <b>גלברד</b> (לפשוטו של רש"י · מקור 7 — כרגע פרק ז׳ בלבד), ו-<b>ACT</b> (יישור חישובי · מקור 8).
+        פירוש רש"י (דברים ז׳:י״ב–י״א:כ״ה) עם שכבות ייחוס: <b>ספריא</b>, <b>תורת חיים</b>, <b>גלברד</b> (לפשוטו של רש"י · מקור 7 — כל עקב), ו-<b>ACT</b> (יישור חישובי · מקור 8).
         חדש בגרסה זו: <b>פאנל הכרעת חוקר</b> לכל תגובה — אישור/פסילה עם סיבה והערה (מקור 9, נשמר מקומית); לכל התאמת ACT יש כפתור <b>diff</b> משלה — טקסט רש"י מול טקסט המקור, מילים תואמות מודגשות. ACT מציע כמה מועמדים (מקור 8); החוקר מכריע.
       </p>
 
