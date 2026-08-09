@@ -296,7 +296,7 @@ function App(){
         <div dir="rtl" style={{display:"flex",flexDirection:"column",gap:10}}>
           {visible.map((cm,i)=>{
             const st = STATUS[cm.st];
-            const primaryG = cm.tc.length?canon(cm.tc[0].group):((cm.gel&&cm.gel.length)?canon(cm.gel[0].group):(cm.sef.length?canon(cm.sef[0]):null));
+            const primaryG = cm.tc.length?canon(cm.tc[0].group):((cm.gel&&cm.gel.length)?canon(cm.gel[0].group):(cm.sef.length?canon(cm.sef[0]):((cm.act&&cm.act.length)?canon(cm.act[0].group):null)));
             const col = primaryG?colorFor(primaryG):{c:"#94a3b8",bg:"#ffffff"};
             const isNone = cm.st==="none";
             const attrs = [
@@ -333,15 +333,22 @@ function App(){
                       {canon(g)} <span style={{opacity:.7,fontStyle:"italic"}}>· Sefaria</span>
                     </span>
                   );})}
-                  {(cm.act||[]).map((a,j)=>{ const confirm=cm.tc.some(r=>canon(r.group)===canon(a.group))||cm.sef.some(g=>canon(g)===canon(a.group))||(cm.gel||[]).some(r=>canon(r.group)===canon(a.group)); const hasDiff=(j===0&&DIFF_DATA[cm.cid]); return (
-                    <span key={"a"+j} onClick={hasDiff?()=>setDiffOpen(p=>({...p,[cm.cid]:!p[cm.cid]})):undefined}
+                  {(cm.act||[]).map((a,j)=>{ const confirm=cm.tc.some(r=>canon(r.group)===canon(a.group))||cm.sef.some(g=>canon(g)===canon(a.group))||(cm.gel||[]).some(r=>canon(r.group)===canon(a.group)); return (
+                    <span key={"a"+j}
                       style={{fontSize:11,padding:"2px 7px",borderRadius:4,background:"#7c3aed",color:"#fff",
-                      display:"inline-flex",alignItems:"center",gap:5,cursor:hasDiff?"pointer":"default"}}>
+                      display:"inline-flex",alignItems:"center",gap:5}}>
                       <b>ACT</b> · {a.work} <span style={{opacity:.85}}>{a.score}</span>
                       <span style={{fontSize:10,opacity:.95,borderInlineStart:"1px solid rgba(255,255,255,.5)",paddingInlineStart:5}}>{confirm?"✓ מאשש":"＋ מוסיף"}</span>
-                      {hasDiff && <span style={{marginInlineStart:3}}>{diffOpen[cm.cid]?"\u25B2":"\uD83D\uDD0D"}</span>}
                     </span>
                   );})}
+                  {DIFF_DATA[cm.cid] && (
+                    <button onClick={()=>setDiffOpen(p=>({...p,[cm.cid]:!p[cm.cid]}))}
+                      style={{fontSize:11,padding:"2px 10px",borderRadius:5,cursor:"pointer",border:"1px solid #7c3aed",
+                      background: diffOpen[cm.cid]?"#7c3aed":"#f5f3ff", color: diffOpen[cm.cid]?"#fff":"#6d28d9",
+                      display:"inline-flex",alignItems:"center",gap:4,fontWeight:"bold"}}>
+                      {diffOpen[cm.cid]?"\u25B2 הסתר טקסט":"\uD83D\uDCD6 הצג טקסט / diff"}
+                    </button>
+                  )}
                   {isNone && <span style={{fontSize:11,color:"#94a3b8"}}>רש"י עצמאי?</span>}
                   {anyConfirmed && <span style={{fontSize:11,padding:"2px 7px",borderRadius:4,background:"#d97706",color:"#fff"}}>✓ מאושר · חוקר</span>}
                 </div>
