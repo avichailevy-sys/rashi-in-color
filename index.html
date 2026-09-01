@@ -367,13 +367,13 @@ function App(){
                   {cm.tc.map((r,j)=>{ const cc=colorFor(canon(r.group)); return (
                     <span key={"t"+j} style={{fontSize:11,padding:"2px 7px",borderRadius:4,
                       background:cc.c,color:"#fff"}}>
-                      {details? (r.work+" "+r.locus).trim() : canon(r.group)}
+                      {(r.work+" "+(r.locus||"")).trim()}
                       <span style={{opacity:.8,fontStyle:"italic"}}> · TC{details&&r.conf?(" · "+r.conf):""}</span>
                     </span>
                   );})}
                   {(cm.gel||[]).map((r,j)=>{ const cc=colorFor(canon(r.group)); return (
                     <span key={"g"+j} style={{fontSize:11,padding:"2px 7px",borderRadius:4,background:cc.c,color:"#fff",display:"inline-flex",gap:4,alignItems:"center"}}>
-                      📖 {details?(r.work+" "+(r.locus||"")).trim():canon(r.group)} <span style={{opacity:.85,fontStyle:"italic"}}>· גלברד</span>
+                      📖 {(r.work+" "+(r.locus||"")).trim()} <span style={{opacity:.85,fontStyle:"italic"}}>· גלברד</span>
                     </span>
                   );})}
                   {cm.sef.filter(g=> !cm.tc.some(r=>canon(r.group)===canon(g))).map((g,j)=>{ const cc=colorFor(canon(g)); return (
