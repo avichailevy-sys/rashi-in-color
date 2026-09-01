@@ -78,6 +78,20 @@ const ACT_BY_KEY = {"7:4:1": [{"group": "Talmud Bavli", "work": "בבלי", "sco
 const REJECT_REASONS = ["מקור מאוחר לרש\"י / לא היה זמין לו","אין דמיון טקסטואלי מספיק","ייחוס שגוי של המהדיר","לקט/אנתולוגיה, לא מקור ראשוני","כפילות של ייחוס אחר","אחר"];
 
 function btn(active,color){ return {fontSize:11,padding:"2px 8px",borderRadius:5,cursor:"pointer",border:"1px solid "+color,background:active?color:"#fff",color:active?"#fff":color}; }
+function sefariaLink(work, loc){
+  const W={"בבלי חולין":"Chullin","בבלי ברכות":"Berakhot","בבלי סוטה":"Sotah","בבלי מגילה":"Megillah",
+    "בבלי סנהדרין":"Sanhedrin","בבלי ר\"ה":"Rosh_Hashanah","בבלי תענית":"Taanit","בבלי ערכין":"Arakhin",
+    "בבלי ב\"מ":"Bava_Metzia","בבלי כתובות":"Ketubot","בבלי פסחים":"Pesachim","בבלי שבת":"Shabbat",
+    "ספרי דברים":"Sifrei_Devarim","ספרי":"Sifrei_Devarim","מדרש תנחומא":"Midrash_Tanchuma","תנחומא בובר":"Midrash_Tanchuma_Buber",
+    "דברים רבה":"Devarim_Rabbah","במדבר רבה":"Bamidbar_Rabbah","בראשית רבה":"Bereshit_Rabbah","שמות רבה":"Shemot_Rabbah",
+    "ויקרא רבה":"Vayikra_Rabbah","מכילתא":"Mekhilta_d'Rabbi_Yishmael"};
+  const slug=W[work]; if(!slug) return null;
+  // Sifrei: loc "357:44" -> piska 357 (Sefaria has 357 piskaot). Others: work-level.
+  let ref=slug;
+  if(slug==="Sifrei_Devarim" && loc){ const p=String(loc).split(":")[0]; if(p) ref=slug+"."+p; }
+  return "https://www.sefaria.org/"+ref;
+}
+
 function DiffView({data}){
   const render=(arr)=> arr.map((w,i)=>(
     <span key={i} style={{background: w.m?"#fde68a":"transparent", color:w.m?"#78350f":"#94a3b8", padding:"0 2px", borderRadius:3}}>{w.t} </span>
@@ -398,7 +412,10 @@ function App(){
                 <div style={{fontSize:18,lineHeight:1.7}}>{cm.heText}</div>
                 {(cm.act||[]).map((a,j)=>{ const dk=cm.cid+"|act"+j; if(!diffOpen[dk]||!(a.rashi&&a.rashi.length)) return null; return (
                   <div key={"d"+j} dir="rtl" style={{marginTop:8,background:"#faf5ff",border:"1px solid #e9d5ff",borderRadius:8,padding:"8px 12px"}}>
-                    <div style={{fontSize:11,color:"#6d28d9",marginBottom:4,fontWeight:"bold"}}>ACT · {a.work} {a.loc?("· "+a.loc):""} · יישור {a.score} — הטקסט שנמצא</div>
+                    <div style={{fontSize:11,color:"#6d28d9",marginBottom:4,fontWeight:"bold",display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
+                      <span>ACT · {a.work}{a.loc?(" · אינדקס ACT "+a.loc):""} · יישור {a.score}</span>
+                      {sefariaLink(a.work,a.loc) && <a href={sefariaLink(a.work,a.loc)} target="_blank" rel="noopener" style={{color:"#2563eb",fontWeight:"normal"}}>↗ פתח בספריא</a>}
+                    </div>
                     <DiffView data={a} />
                   </div>
                 );})}
