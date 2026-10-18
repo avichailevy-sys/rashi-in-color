@@ -76,6 +76,7 @@ const ACT_BY_KEY = {"7:4:1": [{"group": "Talmud Bavli", "work": "בבלי", "sco
 
 
 const REJECT_REASONS = ["מקור מאוחר לרש\"י / לא היה זמין לו","אין דמיון טקסטואלי מספיק","ייחוס שגוי של המהדיר","לקט/אנתולוגיה, לא מקור ראשוני","כפילות של ייחוס אחר","אחר"];
+const REL_TYPES = [{code:"direct",label:"מקור ישיר"},{code:"idea",label:"מקבילה רעיונית"},{code:"later",label:"מקור מאוחר שמצטט"},{code:"phrase",label:"ביטוי/לשון משותפים בלבד"},{code:"none",label:"לא קשור"},{code:"other",label:"אחר"}];
 
 function btn(active,color){ return {fontSize:11,padding:"2px 8px",borderRadius:5,cursor:"pointer",border:"1px solid "+color,background:active?color:"#fff",color:active?"#fff":color}; }
 
@@ -284,7 +285,7 @@ function App(){
       <h1 style={{fontSize:24, marginBottom:4}}>רש"י בצבעים — פרשת עקב <span style={{fontSize:14,color:"#7c3aed"}}>· גרסה 0.2</span></h1>
       <p dir="rtl" style={{fontSize:13, color:"#64748b", marginTop:0, lineHeight:1.6}}>
         פירוש רש"י (דברים ז׳:י״ב–י״א:כ״ה) עם שכבות ייחוס: <b>ספריא</b>, <b>תורת חיים</b>, <b>גלברד</b> (לפשוטו של רש"י · מקור 7 — כל עקב), ו-<b>ACT</b> (יישור חישובי · מקור 8).
-        חדש בגרסה זו: <b>פאנל הכרעת חוקר</b> לכל תגובה — אישור/פסילה עם סיבה והערה (מקור 9, נשמר מקומית); לכל התאמת ACT יש כפתור <b>diff</b> משלה — טקסט רש"י מול טקסט המקור, מילים תואמות מודגשות. ACT מציע כמה מועמדים (מקור 8); החוקר מכריע.
+        חדש בגרסה זו: <b>פאנל הכרעת חוקר</b> לכל התאמת ACT החוקר בוחר את <b>סוג הזיקה</b> (מקור ישיר · מקבילה רעיונית · מקור מאוחר שמצטט · ביטוי/לשון בלבד · לא קשור · אחר) + הערה; לתורת חיים/גלברד — אישור/פסילה. נשמר מקומית. לכל התאמת ACT כפתור <b>diff</b> — טקסט רש"י מול המקור, מילים תואמות מודגשות.
       </p>
 
       {status==="loading" && <p>Fetching Ekev from Sefaria…</p>}
@@ -342,7 +343,7 @@ function App(){
             const st = STATUS[cm.st];
             const primaryG = cm.tc.length?canon(cm.tc[0].group):((cm.gel&&cm.gel.length)?canon(cm.gel[0].group):(cm.sef.length?canon(cm.sef[0]):((cm.act&&cm.act.length)?canon(cm.act[0].group):null)));
             const actOnly = !cm.tc.length && !(cm.gel&&cm.gel.length) && !cm.sef.length && !!(cm.act&&cm.act.length);
-            const confirmedHere = Object.keys(verdicts).some(k=>k.indexOf(cm.cid+"|")===0 && verdicts[k] && verdicts[k].status==="confirmed");
+            const confirmedHere = Object.keys(verdicts).some(k=>k.indexOf(cm.cid+"|")===0 && verdicts[k] && (verdicts[k].status==="confirmed" || verdicts[k].relation==="direct"));
             const faint = actOnly && !confirmedHere;
             const base = primaryG?colorFor(primaryG):{c:"#94a3b8",bg:"#ffffff"};
             const col = faint ? {c:base.c, bg:base.c+"12"} : base;
@@ -353,7 +354,7 @@ function App(){
               ...cm.sef.filter(g=>!cm.tc.some(r=>canon(r.group)===canon(g))).map((g)=>({id:"sef:"+canon(g),kind:"ספריא",label:canon(g),color:colorFor(canon(g)).c})),
               ...(cm.act||[]).map((a,j)=>({id:"act:"+j,kind:"ACT",label:a.work,score:a.score,color:"#7c3aed",diffData:(a.rashi&&a.rashi.length)?a:null})),
             ];
-            const anyConfirmed = Object.keys(verdicts).some(k=>k.indexOf(cm.cid+"|")===0 && verdicts[k] && verdicts[k].status==="confirmed");
+            const anyConfirmed = Object.keys(verdicts).some(k=>k.indexOf(cm.cid+"|")===0 && verdicts[k] && (verdicts[k].status==="confirmed" || verdicts[k].relation==="direct"));
             return (
               <div key={i} style={{background:col.bg, borderRight:(faint?"4px dashed "+col.c+"99":"5px solid "+col.c), borderRadius:6,
                 padding:"10px 14px", border: isNone?"1.5px dashed #94a3b8":"1px solid #e2e8f0", borderRightWidth:faint?4:5}}>
@@ -418,26 +419,34 @@ function App(){
                   <div dir="rtl" style={{marginTop:8,borderTop:"1px solid #e2e8f0",paddingTop:8}}>
                     <div style={{fontSize:12,fontWeight:"bold",color:"#7c3aed",marginBottom:6}}>הכרעת חוקר <span style={{fontWeight:"normal",color:"#94a3b8"}}>(מקור 9 · נשמר מקומית)</span></div>
                     {attrs.length===0 && <div style={{fontSize:12,color:"#94a3b8"}}>אין ייחוסים לתגובה זו — מועמד ל"רש"י עצמאי".</div>}
-                    {attrs.map(a=>{ const vk=cm.cid+"|"+a.id; const v=verdicts[vk]||{}; return (
+                    {attrs.map(a=>{ const vk=cm.cid+"|"+a.id; const v=verdicts[vk]||{}; const isACT=a.id.indexOf("act:")===0;
+                      const promoted = isACT ? v.relation==="direct" : v.status==="confirmed";
+                      const rejected = isACT ? v.relation==="none" : v.status==="rejected";
+                      const classified = isACT && v.relation && v.relation!=="direct" && v.relation!=="none";
+                      return (
                       <div key={a.id} style={{display:"flex",flexDirection:"column",gap:4,padding:"6px 8px",borderRadius:6,marginBottom:5,
-                        background: v.status==="confirmed"?"#ecfdf5":v.status==="rejected"?"#fef2f2":"#f8fafc",
-                        border:"1px solid "+(v.status==="confirmed"?"#a7f3d0":v.status==="rejected"?"#fecaca":"#e2e8f0")}}>
+                        background: promoted?"#ecfdf5":rejected?"#fef2f2":classified?"#f5f3ff":"#f8fafc",
+                        border:"1px solid "+(promoted?"#a7f3d0":rejected?"#fecaca":classified?"#ddd6fe":"#e2e8f0")}}>
                         <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
                           <span style={{width:9,height:9,borderRadius:"50%",background:a.color,display:"inline-block"}}></span>
-                          <b style={{fontSize:13,textDecoration: v.status==="rejected"?"line-through":"none"}}>{a.label}</b>
+                          <b style={{fontSize:13,textDecoration: rejected?"line-through":"none"}}>{a.label}</b>
                           <span style={{fontSize:11,color:"#64748b"}}>{a.kind}{a.score?(" · "+a.score):""}{a.loc?(" · "+a.loc):""}</span>
-                          <div style={{marginInlineStart:"auto",display:"flex",gap:4}}>
-                            <button onClick={()=>setVerdict(vk, v.status==="confirmed"?null:{status:"confirmed",reason:undefined})} style={btn(v.status==="confirmed","#16a34a")}>✓ אשר</button>
-                            <button onClick={()=>setVerdict(vk, v.status==="rejected"?null:{status:"rejected"})} style={btn(v.status==="rejected","#dc2626")}>✗ פסול</button>
+                          <div style={{marginInlineStart:"auto",display:"flex",gap:4,alignItems:"center"}}>
+                            {isACT ? (
+                              <select value={v.relation||""} onChange={e=>setVerdict(vk,{relation:e.target.value||undefined})}
+                                style={{fontSize:12,padding:"3px 6px",borderRadius:5,cursor:"pointer",border:"1px solid "+(promoted?"#16a34a":rejected?"#dc2626":classified?"#7c3aed":"#cbd5e1")}}>
+                                <option value="">— סוג הזיקה —</option>
+                                {REL_TYPES.map(r=><option key={r.code} value={r.code}>{r.label}</option>)}
+                              </select>
+                            ) : (
+                              <React.Fragment>
+                                <button onClick={()=>setVerdict(vk, v.status==="confirmed"?null:{status:"confirmed"})} style={btn(v.status==="confirmed","#16a34a")}>✓ אשר</button>
+                                <button onClick={()=>setVerdict(vk, v.status==="rejected"?null:{status:"rejected"})} style={btn(v.status==="rejected","#dc2626")}>✗ פסול</button>
+                              </React.Fragment>
+                            )}
                             {a.diffData && <button onClick={()=>setDiffOpen(p=>({...p,[vk]:!p[vk]}))} style={btn(diffOpen[vk],"#7c3aed")}>diff</button>}
                           </div>
                         </div>
-                        {v.status==="rejected" && (
-                          <select value={v.reason||""} onChange={e=>setVerdict(vk,{reason:e.target.value})} style={{fontSize:12,padding:"3px 6px",borderRadius:5,border:"1px solid #fecaca"}}>
-                            <option value="">— בחר סיבת פסילה —</option>
-                            {REJECT_REASONS.map(r=><option key={r} value={r}>{r}</option>)}
-                          </select>
-                        )}
                         <input value={v.note||""} onChange={e=>setVerdict(vk,{note:e.target.value})} placeholder="הערת חוקר…" style={{fontSize:12,padding:"4px 7px",borderRadius:5,border:"1px solid #e2e8f0"}} />
                         {a.diffData && diffOpen[vk] && <DiffView data={a.diffData} />}
                       </div>
