@@ -260,12 +260,13 @@ function App(){
     return ()=>{cancel=true;};
   },[]);
 
-  function statusOf(cm){
+  function statusOf(cm, verdicts){
+    const rej=(id)=>{const vv=verdicts[cm.cid+"|"+id]; return vv&&(vv.status==="rejected"||vv.relation==="none");};
     const sets = [
-      new Set(cm.sef.map(canon)),
-      new Set(cm.tc.map(r=>canon(r.group))),
-      new Set((cm.gel||[]).map(r=>canon(r.group))),
-      new Set((cm.act||[]).map(a=>canon(a.group))),
+      new Set(cm.sef.filter(g=>!rej("sef:"+canon(g))).map(canon)),
+      new Set(cm.tc.filter((r,j)=>!rej("tc:"+j)).map(r=>canon(r.group))),
+      new Set((cm.gel||[]).filter((r,j)=>!rej("gel:"+j)).map(r=>canon(r.group))),
+      new Set((cm.act||[]).filter((a,j)=>!rej("act:"+j)).map(a=>canon(a.group))),
     ].filter(x=>x.size);
     if(sets.length===0) return "none";
     if(sets.length===1) return "single";
@@ -274,7 +275,7 @@ function App(){
     return inter.size ? "agree" : "differ";
   }
 
-  const enriched = useMemo(()=> comments.map(cm=>({...cm, st:statusOf(cm)})), [comments]);
+  const enriched = useMemo(()=> comments.map(cm=>({...cm, st:statusOf(cm,verdicts)})), [comments,verdicts]);
   const counts = useMemo(()=>{ const o={agree:0,differ:0,single:0,none:0}; enriched.forEach(c=>o[c.st]++); return o; }, [enriched]);
   const actStats = useMemo(()=>{ let conf=0,add=0; enriched.forEach(c=>(c.act||[]).forEach(a=>{ const cf=c.tc.some(r=>canon(r.group)===canon(a.group))||c.sef.some(g=>canon(g)===canon(a.group))||(c.gel||[]).some(r=>canon(r.group)===canon(a.group)); cf?conf++:add++; })); return {conf,add}; }, [enriched]);
   const toggle = (k)=> setFilter(p=>{const n=new Set(p); n.has(k)?n.delete(k):n.add(k); return n;});
@@ -341,13 +342,18 @@ function App(){
         <div dir="rtl" style={{display:"flex",flexDirection:"column",gap:10}}>
           {visible.map((cm,i)=>{
             const st = STATUS[cm.st];
-            const primaryG = cm.tc.length?canon(cm.tc[0].group):((cm.gel&&cm.gel.length)?canon(cm.gel[0].group):(cm.sef.length?canon(cm.sef[0]):((cm.act&&cm.act.length)?canon(cm.act[0].group):null)));
-            const actOnly = !cm.tc.length && !(cm.gel&&cm.gel.length) && !cm.sef.length && !!(cm.act&&cm.act.length);
+            const rej=(id)=>{const vv=verdicts[cm.cid+"|"+id];return vv&&(vv.status==="rejected"||vv.relation==="none");};
+            const tcOK=cm.tc.filter((r,j)=>!rej("tc:"+j));
+            const gelOK=(cm.gel||[]).filter((r,j)=>!rej("gel:"+j));
+            const sefOK=cm.sef.filter(g=>!rej("sef:"+canon(g)));
+            const actOK=(cm.act||[]).filter((a,j)=>!rej("act:"+j));
+            const primaryG = tcOK.length?canon(tcOK[0].group):(gelOK.length?canon(gelOK[0].group):(sefOK.length?canon(sefOK[0]):(actOK.length?canon(actOK[0].group):null)));
+            const actOnly = !tcOK.length && !gelOK.length && !sefOK.length && !!actOK.length;
             const confirmedHere = Object.keys(verdicts).some(k=>k.indexOf(cm.cid+"|")===0 && verdicts[k] && (verdicts[k].status==="confirmed" || verdicts[k].relation==="direct"));
             const faint = actOnly && !confirmedHere;
             const base = primaryG?colorFor(primaryG):{c:"#94a3b8",bg:"#ffffff"};
             const col = faint ? {c:base.c, bg:base.c+"12"} : base;
-            const isNone = cm.st==="none";
+            const isNone = !primaryG;
             const attrs = [
               ...cm.tc.map((r,j)=>({id:"tc:"+j,kind:"תורת חיים",label:(r.work||canon(r.group)),loc:r.locus,color:colorFor(canon(r.group)).c})),
               ...((cm.gel)||[]).map((r,j)=>({id:"gel:"+j,kind:"גלברד",label:(r.work||canon(r.group)),loc:r.locus,note:r.note,color:colorFor(canon(r.group)).c})),
@@ -365,26 +371,26 @@ function App(){
                   <button onClick={()=>setPanelOpen(p=>({...p,[cm.cid]:!p[cm.cid]}))} style={{marginInlineStart:"auto",fontSize:11,padding:"2px 9px",borderRadius:5,cursor:"pointer",border:"1px solid #7c3aed",background: panelOpen[cm.cid]?"#7c3aed":"#fff",color: panelOpen[cm.cid]?"#fff":"#7c3aed"}}>הכרעת חוקר</button>
                 </div>
                 <div dir="ltr" style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:6}}>
-                  {cm.tc.map((r,j)=>{ const cc=colorFor(canon(r.group)); return (
+                  {cm.tc.map((r,j)=>{ const cc=colorFor(canon(r.group)); const r_=rej("tc:"+j); return (
                     <span key={"t"+j} style={{fontSize:11,padding:"2px 7px",borderRadius:4,
-                      background:cc.c,color:"#fff"}}>
+                      background:cc.c,color:"#fff",opacity:r_?0.4:1,textDecoration:r_?"line-through":"none"}}>
                       {(r.work+" "+(r.locus||"")).trim()}
                       <span style={{opacity:.8,fontStyle:"italic"}}> · TC{details&&r.conf?(" · "+r.conf):""}</span>
                     </span>
                   );})}
-                  {(cm.gel||[]).map((r,j)=>{ const cc=colorFor(canon(r.group)); return (
-                    <span key={"g"+j} style={{fontSize:11,padding:"2px 7px",borderRadius:4,background:cc.c,color:"#fff",display:"inline-flex",gap:4,alignItems:"center"}}>
+                  {(cm.gel||[]).map((r,j)=>{ const cc=colorFor(canon(r.group)); const r_=rej("gel:"+j); return (
+                    <span key={"g"+j} style={{fontSize:11,padding:"2px 7px",borderRadius:4,background:cc.c,color:"#fff",display:"inline-flex",gap:4,alignItems:"center",opacity:r_?0.4:1,textDecoration:r_?"line-through":"none"}}>
                       📖 {(r.work+" "+(r.locus||"")).trim()} <span style={{opacity:.85,fontStyle:"italic"}}>· גלברד</span>
                     </span>
                   );})}
-                  {cm.sef.filter(g=> !cm.tc.some(r=>canon(r.group)===canon(g))).map((g,j)=>{ const cc=colorFor(canon(g)); return (
+                  {cm.sef.filter(g=> !cm.tc.some(r=>canon(r.group)===canon(g))).map((g,j)=>{ const cc=colorFor(canon(g)); const r_=rej("sef:"+canon(g)); return (
                     <span key={"s"+j} style={{fontSize:11,padding:"2px 7px",borderRadius:4,
-                      background:"#fff",color:cc.c,border:"1px solid "+cc.c}}>
+                      background:"#fff",color:cc.c,border:"1px solid "+cc.c,opacity:r_?0.4:1,textDecoration:r_?"line-through":"none"}}>
                       {canon(g)} <span style={{opacity:.7,fontStyle:"italic"}}>· Sefaria</span>
                     </span>
                   );})}
-                  {(cm.act||[]).map((a,j)=>{ const confirm=cm.tc.some(r=>canon(r.group)===canon(a.group))||cm.sef.some(g=>canon(g)===canon(a.group))||(cm.gel||[]).some(r=>canon(r.group)===canon(a.group)); const dk=cm.cid+"|act"+j; const hasDiff=a.rashi&&a.rashi.length; return (
-                    <span key={"a"+j} style={{display:"inline-flex",alignItems:"stretch",borderRadius:4,overflow:"hidden",border:"1px solid #7c3aed"}}>
+                  {(cm.act||[]).map((a,j)=>{ const confirm=cm.tc.some(r=>canon(r.group)===canon(a.group))||cm.sef.some(g=>canon(g)===canon(a.group))||(cm.gel||[]).some(r=>canon(r.group)===canon(a.group)); const dk=cm.cid+"|act"+j; const hasDiff=a.rashi&&a.rashi.length; const r_=rej("act:"+j); return (
+                    <span key={"a"+j} style={{display:"inline-flex",alignItems:"stretch",borderRadius:4,overflow:"hidden",border:"1px solid #7c3aed",opacity:r_?0.4:1,textDecoration:r_?"line-through":"none"}}>
                       <span style={{fontSize:11,padding:"2px 7px",background:"#7c3aed",color:"#fff",display:"inline-flex",alignItems:"center",gap:5}}>
                         <b>ACT</b> · {a.ref||a.work} <span style={{opacity:.85}}>{a.score}</span>
                         <span style={{fontSize:10,opacity:.95,borderInlineStart:"1px solid rgba(255,255,255,.5)",paddingInlineStart:5}}>{confirm?"✓ מאשש":"＋ מוסיף"}</span>
